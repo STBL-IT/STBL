@@ -22,12 +22,18 @@ contract STBL is ERC20PermitUpgradeable, AccessControlUpgradeable, UUPSUpgradeab
     bytes32 public constant REMOVE_LOST_ADDRESS_ROLE = keccak256("REMOVE_LOST_ADDRESS_ROLE");
     bytes32 public constant RESCUE_TOKENS_ROLE = keccak256("RESCUE_TOKENS_ROLE");
 
+    /// @dev limits max total supply
     uint256 private _maxSupply;
+    /// @dev indicates whether the token transfer is enabled
     bool private _transferable;
+    /// @dev indicates whether the token minting is enabled
     bool private _mintable;
+    /// @dev indicates whether the token burning is enabled
     bool private _burnable;
 
+    /// @dev mapping of blocked addresses
     mapping(address => bool) private _blacklist;
+    /// @dev mapping of addresses marked as lost
     mapping(address => bool) private _lostAddress;
 
     ///@dev emitted when transferability is changed
@@ -69,6 +75,8 @@ contract STBL is ERC20PermitUpgradeable, AccessControlUpgradeable, UUPSUpgradeab
         _;
     }
 
+    ///@notice constructor
+    ///@dev can't be called in the impl
     constructor() {
         _disableInitializers();
     }
@@ -323,6 +331,7 @@ contract STBL is ERC20PermitUpgradeable, AccessControlUpgradeable, UUPSUpgradeab
         return _lostAddress[wallet_];
     }
 
+    ///@notice returns the decimals
     function decimals() public pure override returns (uint8) {
         return 6;
     }
