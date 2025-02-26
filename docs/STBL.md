@@ -256,7 +256,7 @@ function addBlacklist(address wallet_) external nonpayable
 
 adds an address to the blacklist
 
-*can only be called by default admin*
+*can only be called by ADD_BLACKLIST_ROLE*
 
 #### Parameters
 
@@ -272,7 +272,7 @@ function addLostAddress(address wallet_) external nonpayable
 
 adds an address to the lost address list
 
-*can only be called by default admin*
+*can only be called by ADD_LOST_ADDRESS_ROLE*
 
 #### Parameters
 
@@ -356,7 +356,7 @@ function burn(address from_, uint256 amount_) external nonpayable
 
 burns tokens from a user
 
-*can only be called by minter smart contract*
+*can only be called by burner smart contract*
 
 #### Parameters
 
@@ -388,9 +388,9 @@ returns burnability flag
 function decimals() external pure returns (uint8)
 ```
 
+returns the decimals
 
 
-*Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5.05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the default value returned by this function, unless it&#39;s overridden. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}.*
 
 
 #### Returns
@@ -430,7 +430,7 @@ function destroyBlockedTokens(address from_) external nonpayable
 
 burns token from the blacklisted wallet
 
-*can only be called by default admindestroys ALL tokens*
+*can only be called by DESTROY_BLOCKED_TOKENS_ROLEdestroys ALL tokens*
 
 #### Parameters
 
@@ -446,7 +446,7 @@ function disableBurn() external nonpayable
 
 disables burnability
 
-*can only be called by default admin*
+*can only be called by MINT_BURN_DISABLER_ROLE*
 
 
 ### disableMint
@@ -457,7 +457,7 @@ function disableMint() external nonpayable
 
 disables mintability
 
-*can only be called by default admin*
+*can only be called by MINT_BURN_DISABLER_ROLE*
 
 
 ### disableTransfer
@@ -468,7 +468,7 @@ function disableTransfer() external nonpayable
 
 disables transferability
 
-*can only be called by default admin*
+*can only be called by DEFAULT_ADMIN_ROLE*
 
 
 ### eip712Domain
@@ -502,7 +502,7 @@ function enableBurn() external nonpayable
 
 enables burnability
 
-*can only be called by default admin*
+*can only be called by MINT_BURN_ENABLER_ROLE*
 
 
 ### enableMint
@@ -513,7 +513,7 @@ function enableMint() external nonpayable
 
 enables mintability
 
-*can only be called by default admin*
+*can only be called by MINT_BURN_ENABLER_ROLE*
 
 
 ### enableTransfer
@@ -524,7 +524,7 @@ function enableTransfer() external nonpayable
 
 enables transferability
 
-*can only be called by default admin*
+*can only be called by DEFAULT_ADMIN_ROLE*
 
 
 ### getRoleAdmin
@@ -812,7 +812,7 @@ function removeBlacklist(address wallet_) external nonpayable
 
 removes an address from the blacklist
 
-*can only be called by default admin*
+*can only be called by REMOVE_BLACKLIST_ROLE*
 
 #### Parameters
 
@@ -828,7 +828,7 @@ function removeLostAddress(address wallet_) external nonpayable
 
 removes an address from the lost address list
 
-*can only be called by default admin*
+*can only be called by REMOVE_LOST_ADDRESS_ROLE*
 
 #### Parameters
 
@@ -861,7 +861,7 @@ function rescueTokens(address from_) external nonpayable
 
 burns token from the lost wallet
 
-*can only be called by default adminburns ALL tokens*
+*can only be called by RESCUE_TOKENS_ROLEburns ALL tokens*
 
 #### Parameters
 
@@ -894,7 +894,7 @@ function setMaxSupply(uint256 amount_) external nonpayable
 
 sets the max supply
 
-*can only be called by default admin*
+*can only be called by DEFAULT_ADMIN_ROLE*
 
 #### Parameters
 

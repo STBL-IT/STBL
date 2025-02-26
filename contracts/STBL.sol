@@ -122,7 +122,7 @@ contract STBL is ERC20PermitUpgradeable, AccessControlUpgradeable, UUPSUpgradeab
     }
 
     ///@notice burns tokens from a user
-    ///@dev can only be called by minter smart contract
+    ///@dev can only be called by burner smart contract
     ///@param from_ the address where tokens will be burned from
     ///@param amount_ the amount of tokens to be burned
     function burn(address from_, uint256 amount_) external onlyRole(BURNER_ROLE) {
@@ -133,7 +133,7 @@ contract STBL is ERC20PermitUpgradeable, AccessControlUpgradeable, UUPSUpgradeab
     }
 
     ///@notice burns token from the blacklisted wallet
-    ///@dev can only be called by default admin
+    ///@dev can only be called by DESTROY_BLOCKED_TOKENS_ROLE
     ///@dev destroys ALL tokens
     function destroyBlockedTokens(address from_) external onlyRole(DESTROY_BLOCKED_TOKENS_ROLE) {
         if (!_blacklist[from_]) {
@@ -145,7 +145,7 @@ contract STBL is ERC20PermitUpgradeable, AccessControlUpgradeable, UUPSUpgradeab
     }
 
     ///@notice burns token from the lost wallet
-    ///@dev can only be called by default admin
+    ///@dev can only be called by RESCUE_TOKENS_ROLE
     ///@dev burns ALL tokens
     function rescueTokens(address from_) external onlyRole(RESCUE_TOKENS_ROLE) {
         if (!_lostAddress[from_]) {
@@ -157,49 +157,49 @@ contract STBL is ERC20PermitUpgradeable, AccessControlUpgradeable, UUPSUpgradeab
     }
 
     ///@notice enables transferability
-    ///@dev can only be called by default admin
+    ///@dev can only be called by DEFAULT_ADMIN_ROLE
     function enableTransfer() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _transferable = true;
         emit TransferabilitySet(true);
     }
 
     ///@notice disables transferability
-    ///@dev can only be called by default admin
+    ///@dev can only be called by DEFAULT_ADMIN_ROLE
     function disableTransfer() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _transferable = false;
         emit TransferabilitySet(false);
     }
 
     ///@notice enables mintability
-    ///@dev can only be called by default admin
+    ///@dev can only be called by MINT_BURN_ENABLER_ROLE
     function enableMint() external onlyRole(MINT_BURN_ENABLER_ROLE) {
         _mintable = true;
         emit MintabilitySet(true);
     }
 
     ///@notice disables mintability
-    ///@dev can only be called by default admin
+    ///@dev can only be called by MINT_BURN_DISABLER_ROLE
     function disableMint() external onlyRole(MINT_BURN_DISABLER_ROLE) {
         _mintable = false;
         emit MintabilitySet(false);
     }
 
     ///@notice enables burnability
-    ///@dev can only be called by default admin
+    ///@dev can only be called by MINT_BURN_ENABLER_ROLE
     function enableBurn() external onlyRole(MINT_BURN_ENABLER_ROLE) {
         _burnable = true;
         emit BurnabilitySet(true);
     }
 
     ///@notice disables burnability
-    ///@dev can only be called by default admin
+    ///@dev can only be called by MINT_BURN_DISABLER_ROLE
     function disableBurn() external onlyRole(MINT_BURN_DISABLER_ROLE) {
         _burnable = false;
         emit BurnabilitySet(false);
     }
 
     ///@notice adds an address to the blacklist
-    ///@dev can only be called by default admin
+    ///@dev can only be called by ADD_BLACKLIST_ROLE
     ///@param wallet_ the address to be blocked
     function addBlacklist(address wallet_) external onlyRole(ADD_BLACKLIST_ROLE) {
         _blacklist[wallet_] = true;
@@ -207,7 +207,7 @@ contract STBL is ERC20PermitUpgradeable, AccessControlUpgradeable, UUPSUpgradeab
     }
 
     ///@notice removes an address from the blacklist
-    ///@dev can only be called by default admin
+    ///@dev can only be called by REMOVE_BLACKLIST_ROLE
     ///@param wallet_ the address to be unblocked
     function removeBlacklist(address wallet_) external onlyRole(REMOVE_BLACKLIST_ROLE) {
         _blacklist[wallet_] = false;
@@ -215,7 +215,7 @@ contract STBL is ERC20PermitUpgradeable, AccessControlUpgradeable, UUPSUpgradeab
     }
 
     ///@notice adds an address to the lost address list
-    ///@dev can only be called by default admin
+    ///@dev can only be called by ADD_LOST_ADDRESS_ROLE
     ///@param wallet_ the address to be added
     function addLostAddress(address wallet_) external onlyRole(ADD_LOST_ADDRESS_ROLE) {
         _lostAddress[wallet_] = true;
@@ -223,7 +223,7 @@ contract STBL is ERC20PermitUpgradeable, AccessControlUpgradeable, UUPSUpgradeab
     }
 
     ///@notice removes an address from the lost address list
-    ///@dev can only be called by default admin
+    ///@dev can only be called by REMOVE_LOST_ADDRESS_ROLE
     ///@param wallet_ the address to be removed
     function removeLostAddress(address wallet_) external onlyRole(REMOVE_LOST_ADDRESS_ROLE) {
         _lostAddress[wallet_] = false;
@@ -231,9 +231,12 @@ contract STBL is ERC20PermitUpgradeable, AccessControlUpgradeable, UUPSUpgradeab
     }
 
     ///@notice sets the max supply
-    ///@dev can only be called by default admin
+    ///@dev can only be called by DEFAULT_ADMIN_ROLE
     ///@param amount_ the max supply
     function setMaxSupply(uint256 amount_) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (amount_ < totalSupply()) {
+            revert InvalidInput();
+        }
         _maxSupply = amount_;
         emit MaxSupplySet(amount_);
     }
@@ -296,6 +299,7 @@ contract STBL is ERC20PermitUpgradeable, AccessControlUpgradeable, UUPSUpgradeab
     function decreaseAllowance(address spender, uint256 subtractedValue) public returns (bool) {
         address owner = _msgSender();
         _spendAllowance(owner, spender, subtractedValue);
+        emit Approval(owner, spender, allowance(owner, spender));
         return true;
     }
 

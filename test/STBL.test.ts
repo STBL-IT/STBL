@@ -192,8 +192,13 @@ describe('Token', function () {
       token,
       'AccessControlUnauthorizedAccount',
     )
-    await token.connect(owner).setMaxSupply(123n)
-    expect(await token.maxSupply()).to.equal(123n)
+    await token.connect(owner).setMaxSupply(usdtMintedAmount)
+    expect(await token.maxSupply()).to.equal(usdtMintedAmount)
+  })
+
+  it('setMaxSupply:amount<totalSupply', async function () {
+    await loadFixture(deployFixture)
+    await expect(token.connect(owner).setMaxSupply(123n)).to.be.revertedWithCustomError(token, "InvalidInput")
   })
 
   it('enableMint:AccessControlUnauthorizedAccount', async function () {
@@ -281,7 +286,7 @@ describe('Token', function () {
     await loadFixture(deployFixture)
     await token.connect(alice).approve(bob.address, usdtMintedAmount * 2n)
     expect(await token.allowance(alice.address, bob.address)).to.be.eq(usdtMintedAmount * 2n)
-    await token.connect(alice).decreaseAllowance(bob.address, usdtMintedAmount)
+    await expect(token.connect(alice).decreaseAllowance(bob.address, usdtMintedAmount)).to.emit(token, 'Approval')
     expect(await token.allowance(alice.address, bob.address)).to.be.eq(usdtMintedAmount)
   })
 
